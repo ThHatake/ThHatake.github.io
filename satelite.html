@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">           
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1/dist/chart.umd.min.js"></script>
+    <title>Satelites UNG</title>
+</head>
+<body>
+    <div class="panel panel-default">
+        <div class="panel-header mt-3">
+            <h3 class="text-center position-sticky">Satelites UNG</h3>
+        </div>
+        <div class="panel-body">
+            <div id="sat-data" class="d-none container mx-auto my-2 px-3">
+                <div class="row text-center">
+                    <canvas id="canvas" width="400" height="300"></canvas>
+                </div>
+                <div class="row mt-4">
+                    <div class="col"><b>Nome:</b> <span id="name"></span></div>
+                    <div class="col"><b>Codigo Norad:</b> <span id="norad"></span></div>
+                    <div class="col"><b>Sensor:</b> <span id="sensor"></span></div>
+                </div>
+                <div class="row text-center mt-2">
+                    <div class="col"><b>Latitude:</b> <span id="coordX"></span> | <b>Longitude:</b> <span id="coordY"></span></div>
+                </div>
+                <div id="written-orientation" class="row">
+                    <p><b>Elevação: </b><span id="inclinacao"></span></p>
+                    <p><b>Direcionar: </b><span id="rotacao"></span></p>
+                </div>
+                <div id="graphic-location" class="row">
+                    <div id="container">
+                        <img id="image" src="/app/img/Rosa_dos_Ventos.png" />
+                        <img id="text" src="/app/img/icons8-up-arrow-1002.png"></img>
+                    </div>
+                    <div id="container">
+                        <img id="image2" src="/app/img/angulo.png" />
+                        <img id="text2" src="/app/img/icons8-up-arrow-1002.png"></img>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="window.location='/'"><i class="fa-solid fa-chevron-left"></i>voltar
+                </button>
+                <link rel="stylesheet" href="/app/css/planet.css">
+            </div>
+            <div id="loading" class="text-center">
+                Carregando... <div class="spinner-border" role="status">
+                    <span class="sr-only"></span>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer"></div>
+    </div>
+    <script src="/app/js/satelites.js"></script>
+    <script src="/app/js/three.js"></script>
+    <script src="/app/js/script.js"></script>
+    <script>
+        getSatelite(window.location.search.substring(1).substring(4)).then(sat =>{
+            document.getElementById("loading").innerHTML = "";
+            var satelite = document.getElementById("sat-data").classList.remove("d-none");
+
+            document.getElementById("name").innerHTML = sat.name;
+            document.getElementById("norad").innerHTML = sat.noradId;
+            document.getElementById("sensor").innerHTML = sat.sensor;
+            document.getElementById("coordX").innerHTML = sat.coordX;
+            document.getElementById("coordY").innerHTML = sat.coordY;
+
+
+            const rotated = document.getElementById('text');
+            const rotated2 = document.getElementById('text2');
+            const inclinacao = document.getElementById('inclinacao');
+            const rotacao = document.getElementById('rotacao');
+            setTimeout(
+            () => {
+                if(sat.azimuth !== 0){
+                    rotated.style.transform = `rotate(${sat.azimuth}deg)`;
+                    rotated2.style.transform = `rotate(${(sat.elevation)}deg)`;
+                    inclinacao.innerText = `elevar ${sat.elevation}º (graus) em relação ao solo`;
+                    rotacao.innerText = `rotacionar ${sat.azimuth}º (graus) em relação ao ao norte`;
+                }else{
+                    var writtenOrientation = document.getElementById('written-orientation').classList.add('d-none');
+                    var graphicLocation = document.getElementById('graphic-location').classList.add('d-none');
+                }
+            }            
+            ,2000);
+        });
+    </script>
+</body>
+</html>
